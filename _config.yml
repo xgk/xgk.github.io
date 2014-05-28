@@ -17,7 +17,6 @@ author :
   twitter : herbert.he@gmail.com
   feedburner : 
 
-excerpt_separator: <!--more--> # you can specify your own separator, of course.
 
 # The production_url is only used when full-domain names are needed
 # such as sitemap.txt 
@@ -28,6 +27,9 @@ excerpt_separator: <!--more--> # you can specify your own separator, of course.
 # Finally if you are pushing to a GitHub project page, include the project name at the end.
 #
 production_url : http://xgk.github.io
+
+markdown:      kramdown
+excerpt_separator: <!--more--> # you can specify your own separator, of course.
 
 # All Jekyll-Bootstrap specific configurations are namespaced into this hash
 #
