@@ -9,13 +9,15 @@ pygments: true
 # so be sure to set them if your theme uses them.
 #
 title : XGeek's Technical Blog
-tagline: Cloud Computing|Machine Learning
+tagline: Cloud Computing
 author : 
   name : Pengcheng HE
   email : herbert.he@gmail.com
   github : xgk
   twitter : herbert.he@gmail.com
   feedburner : 
+
+excerpt_separator: <!--more--> # you can specify your own separator, of course.
 
 # The production_url is only used when full-domain names are needed
 # such as sitemap.txt 
@@ -82,7 +84,7 @@ JB :
   comments :
     provider : disqus
     disqus :
-      short_name : jekyllbootstrap
+      short_name : xgk
     livefyre :
       site_id : 123
     intensedebate :
