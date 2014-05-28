@@ -8,7 +8,7 @@ pygments: true
 # Themes are encouraged to use these universal variables 
 # so be sure to set them if your theme uses them.
 #
-title : XGeek's technical blog
+title : XGeek's Technical Blog
 tagline: Cloud Computing|Machine Learning
 author : 
   name : Pengcheng HE
