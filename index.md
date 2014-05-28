@@ -1,7 +1,7 @@
 ---
 layout: page
 title: XGeek's Technical Blog
-tagline: Cloud Computing
+tagline: Cloud Computing | Machine Learning
 ---
 {% include JB/setup %}
 
@@ -15,7 +15,7 @@ tagline: Cloud Computing
 		</h3>
 		<hr>
 		<article> {{ post.excerpt | strip_html}} </article>
-		<a href="{{ BASE_PATH }}{{ post.url }}">Read more...</a>
+		<a href="{{ BASE_PATH }}{{ post.url }}">More...</a>
 	</li>
 	<hr>
 {% endfor %}
