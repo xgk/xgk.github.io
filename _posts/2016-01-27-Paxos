@@ -1,0 +1,14 @@
+---
+layout: post
+title: "Nots on Paxos"
+description: ""
+category: "Cloud Computing" 
+tags: [ Concensus, Distributed ]
+---
+{% include JB/setup %}
+
+Hello world!
+
+This is my first blog on GitHub!
+
+<!--more-->
