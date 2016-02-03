@@ -1,0 +1,14 @@
+
+http://xgk.github.io/archive
+http://xgk.github.io/atom.xml
+http://xgk.github.io/categories
+http://xgk.github.io/
+http://xgk.github.io/pages
+http://xgk.github.io/rss.xml
+http://xgk.github.io/sitemap.txt
+http://xgk.github.io/tags
+
+http://xgk.github.io/cloud%20computing/2016/02/01/rdma
+http://xgk.github.io/cloud%20computing/2016/01/27/Paxos
+http://xgk.github.io/cloud%20computing/2014/05/28/page-one
+http://xgk.github.io/lessons/2011/12/29/jekyll-introduction
