@@ -3,6 +3,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
     <title>XGK's Tech Blog</title>
     
     <meta name="author" content="Pengcheng He">
@@ -10,22 +12,30 @@
     <!-- Enable responsive viewport -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
-    <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-
-    <!-- Le styles -->
-    <link href="/assets/themes//bootstrap/css/bootstrap.2.2.2.min.css" rel="stylesheet">
+    <!-- Bootstrap styles -->
+    <link href="/assets/themes//bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Optional theme -->
+    <link href="/assets/themes//bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
+    <!-- Sticky Footer -->
+    <link href="/assets/themes//bootstrap/css/bs-sticky-footer.css" rel="stylesheet">
+    
+    <!-- Custom styles -->
     <link href="/assets/themes//css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
 
-    <!-- Le fav and touch icons -->
-  <!-- Update these with your own images
-    <link rel="shortcut icon" href="images/favicon.ico">
-    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
-  -->
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!-- Update these with your own images
+      <link rel="shortcut icon" href="images/favicon.ico">
+      <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+      <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+      <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+    -->
 
     <!-- atom & rss feed -->
     <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
@@ -34,11 +44,22 @@
   </head>
 
   <body>
-    <div class="navbar">
-      <div class="navbar-inner">
-        <div class="container-narrow">
-          <a class="brand" href="/">XGK's Tech Blog</a>
-          <ul class="nav">
+    <div id="wrap">
+      <nav class="navbar navbar-default" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#jb-navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">XGK's Tech Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="jb-navbar-collapse">
+          <ul class="nav navbar-nav">
             
             
             
@@ -97,34 +118,110 @@
 
 
           </ul>
-        </div>
-      </div>
-    </div>
+          <form class="navbar-form navbar-right" role="search">
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="Search">
+            </div>
+            <button type="submit" class="btn btn-default">Submit</button>
+          </form>
+        </div><!-- /.navbar-collapse -->
+      </nav>
 
-    <div class="container-narrow">
-
-      <div class="content">
+      <div class="container">
         
 <div class="page-header">
   <h1>XGK's Tech Blog  <small>Distributed Computing, Machine Learning</small></h1>
 </div>
 
-<div class="row-fluid">
-  <div class="span12">
+<div class="row">
+  <div class="col-xs-12">
     
-<p>Read <a href="http://jekyllbootstrap.com/usage/jekyll-quick-start.html">Jekyll Quick Start</a></p>
-
-<p>Complete usage and documentation available at: <a href="http://jekyllbootstrap.com">Jekyll Bootstrap</a></p>
-
 <ul class="posts">
   
-    <li><span>01 Feb 2016</span> &raquo; <a href="/cloud%20computing/2016/02/01/rdma">Notes on RDMA</a></li>
+    <li>
+        <h3 class="title">
+        <span>01 Feb 2016</span>
+        &raquo; 
+        <a href="/cloud%20computing/2016/02/01/rdma">Notes on RDMA</a>
+        </h3>
+        <hr />
+        <article> 
+RDMA 
+是远程直接内存访问的缩写。最开使用在Infiniban技术中，但是由于Inifiband技术成本高，推广应用不好。
+随着RoCE技术的出现使得RDMA应用到Ethernet上成为可能。RDMA相比于 TCP／IP over ethernet的好处在于，
+
+
+  直接写远程主机开辟出来的内存地址，绕过操作系统的TCP/IP socket协议栈。避免了通信过程中的中断开销和操作系统
+内核切换的开销。从而释放出部分CPU资源用于计算，这一点在数据传输量很大的情况下比较明显，比如40Gbps
+  没有TCP链接建立过程的中的握手开销，有利于高频短报文的传输
+
+
+当然RDMA相对于传统的TCP/IP over ethernet而言，也有一些缺陷，比如
+
+
+  需要专门的网卡和交换机支持。虽然这套RDMA技术目前已经很成熟，但并不是所有的网卡和交换机都能够无缝支持RDMA。
+有的需要专门配置，有的根本就不支持。
+  因为网卡需要为每个连接维护一个内存映射表，而这个表一般需要存储在网卡的有限的Cache中，否则性能将大打折扣。
+因此单机允许的并发连接数有限，论文里面支持的网络规模一般在100台左右。
+  编程模型复杂，因为没有协议栈的支持，数据读写的协议全部要靠应用程序实现。目前已经有一些技术开始用TCP/IP的socket
+接口来封装RDMA，从而简化RDMA的编程。
+
+
+虽然RDMA有这些缺点，但是随着数据中心内部主机带宽的快速增加，近几年有的已经达到40Gbps，TCP／IP over Ethernet
+很难将这个带宽填满，已经十几年历史的RDMA又开始受到学术届和工业界的重视。
+
+
+ </article>
+        <a href="/cloud%20computing/2016/02/01/rdma">More...</a>
+    </li>
   
-    <li><span>27 Jan 2016</span> &raquo; <a href="/cloud%20computing/2016/01/27/Paxos">Notes on Paxos</a></li>
+    <li>
+        <h3 class="title">
+        <span>27 Jan 2016</span>
+        &raquo; 
+        <a href="/cloud%20computing/2016/01/27/Paxos">Notes on Paxos</a>
+        </h3>
+        <hr />
+        <article> 
+最近读了一些Paxos的文章. 对其总算有了一些初步的认识. 首先弄清楚Paxos要解决的问题，
+
+
   
-    <li><span>28 May 2014</span> &raquo; <a href="/cloud%20computing/2014/05/28/page-one">Page One</a></li>
+    Leader失效后的再选举问题
+    如果原来的Leader失效，多个Leader同时出现，并且同时提交事务，3PC无法解决结果一致性问题。2PC则直接导致服务不可用。Paxos通过引入提议序列号这样的逻辑时钟，解决了提交事务的冲突，最终达到结果一致。
   
-    <li><span>29 Dec 2011</span> &raquo; <a href="/lessons/2011/12/29/jekyll-introduction">Jekyll Introduction</a></li>
+  
+    Cohort部分失效服务仍然可用并且恢复后保持与leader同步
+  
+
+
+
+ </article>
+        <a href="/cloud%20computing/2016/01/27/Paxos">More...</a>
+    </li>
+  
+    <li>
+        <h3 class="title">
+        <span>28 May 2014</span>
+        &raquo; 
+        <a href="/cloud%20computing/2014/05/28/page-one">Page One</a>
+        </h3>
+        <hr />
+        <article> 
+Hello world!
+
+This is my first blog on GitHub! \( f(x_i, W) =  W x_i \)
+
+Concretely, recall that the linear function had the form \( f(x_i,W) = W x_{ {i_1} ^2} \) and the SVM we developed was formulated as:
+
+
+
+
+
+
+ </article>
+        <a href="/cloud%20computing/2014/05/28/page-one">More...</a>
+    </li>
   
 </ul>
 
@@ -134,20 +231,28 @@
 
 
       </div>
-      <hr>
-      <footer>
+
+    </div>
+
+    <div id="footer">
+      <div class="container">
         <p>&copy; 2016 Pengcheng He
           with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
           and <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>
         </p>
-      </footer>
-
+      </div>
     </div>
 
     
 
 
 
+
+
+    <!-- Latest compiled and minified JavaScript, requires jQuery 1.x (2.x not supported in IE8) -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="/assets/themes//bootstrap/js/bootstrap.min.js"></script>
   </body>
 </html>
 
