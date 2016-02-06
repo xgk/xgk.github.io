@@ -156,11 +156,11 @@ The unquantization will use the max and min values of that column, e.g. (See <co
 <p>A strip is a group of columns in the gradient matrix, which is decided by the number of distributed computation nodes. 
 For example, suppose there are 4 nodes, and 8 columns, then each nodes will have a strip of 2 columns.</p>
 
-<h4 id="residual">4.  Residual</h4>
+<h4 id="residual">4. Residual</h4>
 
 <p>The residual of each column is calculated during quantization and used for the quantization of next mini-batch by adding it to the local sub-gradients of that column.</p>
 
-<h4 id="an-example-of-message-exchange">5.  An example of message exchange</h4>
+<h3 id="an-example-of-message-exchange">5.  An example of message exchange</h3>
 
 <p>Here is an example picture of the message exchange during aggregation.</p>
 
