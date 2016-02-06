@@ -4,7 +4,7 @@
  <title>XGK&#39;s Tech Blog</title>
  <link href="http://xgk.github.io/atom.xml" rel="self"/>
  <link href="http://xgk.github.io"/>
- <updated>2016-02-06T09:45:15+00:00</updated>
+ <updated>2016-02-06T09:47:17+00:00</updated>
  <id>http://xgk.github.io</id>
  <author>
    <name>Pengcheng He</name>
@@ -58,11 +58,11 @@ The unquantization will use the max and min values of that column, e.g. (See &lt
 &lt;p&gt;A strip is a group of columns in the gradient matrix, which is decided by the number of distributed computation nodes. 
 For example, suppose there are 4 nodes, and 8 columns, then each nodes will have a strip of 2 columns.&lt;/p&gt;
 
-&lt;h4 id=&quot;residual&quot;&gt;4. Residual&lt;/h4&gt;
+&lt;h4 id=&quot;residual&quot;&gt;4.  Residual&lt;/h4&gt;
 
 &lt;p&gt;The residual of each column is calculated during quantization and used for the quantization of next mini-batch by adding it to the local sub-gradients of that column.&lt;/p&gt;
 
-&lt;h3 id=&quot;an-example-of-message-exchange&quot;&gt;5.  An example of message exchange&lt;/h3&gt;
+&lt;h4 id=&quot;an-example-of-message-exchange&quot;&gt;5.  An example of message exchange&lt;/h4&gt;
 
 &lt;p&gt;Here is an example picture of the message exchange during aggregation.&lt;/p&gt;
 
