@@ -17,8 +17,7 @@ author :
   twitter : 
   feedburner : 
 
-excerpt_separator: \n\n 
-#<!-more-->
+excerpt_separator: <!--more-->
 
 markdown: kramdown
 

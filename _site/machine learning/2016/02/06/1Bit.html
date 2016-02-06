@@ -1,0 +1,254 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Notes on 1bit SGD</title>
+    <meta name="description" content="">
+    <meta name="author" content="Pengcheng He">
+
+    <!-- Enable responsive viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+    <link href="/assets/themes//bootstrap/css/bootstrap.2.2.2.min.css" rel="stylesheet">
+    <link href="/assets/themes//css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+
+    <!-- atom & rss feed -->
+    <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
+    <link href="/rss.xml" type="application/rss+xml" rel="alternate" title="Sitewide RSS Feed">
+
+  </head>
+
+  <body>
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container-narrow">
+          <a class="brand" href="/">XGK's Tech Blog</a>
+          <ul class="nav">
+            
+            
+            
+
+
+  
+    
+      
+      	
+      	<li><a href="/archive">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories">Categories</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags">Tags</a></li>
+      	
+      
+    
+  
+
+
+
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-narrow">
+
+      <div class="content">
+        
+<div class="page-header">
+  <h1>Notes on 1bit SGD </h1>
+</div>
+
+<div class="row-fluid post-full">
+  <div class="span12">
+    <div class="date">
+      <span>06 February 2016</span>
+    </div>
+    <div class="content">
+      <p>Recently I studied how <a href="https://cntk.codeplex.com">CNTK</a> implemented the <a href="http://research.microsoft.com/apps/pubs/?id=230137">1-Bit SGD</a> in sync mode. 
+Here is a note  of the implementation.</p>
+
+<p>Most of the implementation is in files, <code>1BitSGD\AllReduceDistGradAggregator.h</code> &amp; <code>1BitSGD\MatrixQuantizer.h</code></p>
+
+<!--more-->
+
+<h4 id="background">1.  Background</h4>
+
+<p>The Gradients of each layer in CNTK is stored as a <strong>Maxtrix of MxN</strong>, e.g. <em>M inputs, N outputs</em>. And the quantization of gradients is <em>based on each column</em>, e.g. each output.</p>
+
+<p>There are several steps during distributed aggregation,</p>
+
+<ul>
+  <li>Encoding local sub-gradients of each <strong>Mini-Batch</strong> using <strong>1 Bit</strong> by quantization.</li>
+  <li>Send local quantized sub-gradients to other computation node in <em>striped</em> mode to get aggregated.</li>
+  <li>Receive a strip of quantized sub-gradients from other nodes.</li>
+  <li>Decoding each received strip of quantized sub-gradients by unquantization, then <strong>add the unquantized results to aggregated gradients strip</strong>.</li>
+  <li>Encoding the strip of aggregated gradients using 1 bits by quantization.</li>
+  <li>Broadcast the quantized aggregated gradients strip to other nodes.</li>
+  <li>Receiving the quantized aggregated gradients strips from other nodes, and merge them to local quantized gradient matrix.</li>
+  <li>Decoding the aggregated local quantized gradient matrix as an approximation of the global gradients.</li>
+</ul>
+
+<h4 id="quantizationunquantization">2.  Quantization&amp;UnQuantization</h4>
+
+<p>The quantization is based on each column. E.g.</p>
+
+<pre><code>Q = 0 if V&gt;=0
+Q = 1 if V&lt;0
+</code></pre>
+
+<p>The max and min values of that column are stored together with the quantized results. See, <code>QuantizedColumn</code>
+The unquantization will use the max and min values of that column, e.g. (See <code>ValueQuantizer</code>)
+<script type="math/tex">V’ = (Q+0.5)*(max-min)/2 + min;</script></p>
+
+<h4 id="strip">3.  Strip</h4>
+
+<p>A strip is a group of columns in the gradient matrix, which is decided by the number of distributed computation nodes. 
+For example, suppose there are 4 nodes, and 8 columns, then each nodes will have a strip of 2 columns.</p>
+
+<h4 id="residual">4.  Residual</h4>
+<p>The residual of each column is calculated during quantization and used for the quantization of next mini-batch by adding it to the local sub-gradients of that column.</p>
+
+<h4 id="an-example-of-message-exchange">5.  An example of message exchange</h4>
+
+<p>Here is an example picture of the message exchange during aggregation.</p>
+
+<p><img src="/assets/images/Example_of_1Bit_SGD_Message_Pass.png" alt="Example of 1Bit SGD Message Exchange" /></p>
+
+<p><em>Node0</em> will collect quantized local-sub-gradients of <em>Strip0</em> from all other 3 <em>nodes</em>. 
+Then unquantizes each of them and add results to aggregated results of <em>strip0</em>.
+Then quantize the aggregated results of <em>Strip0</em>, e.g. <em>AggStrip0</em> and broadcast it to other 3 <em>nodes</em>.</p>
+
+
+    </div>
+
+  
+    <ul class="tag_box inline">
+      <li><i class="icon-folder-open"></i></li>
+      
+      
+
+
+  
+     
+    	<li><a href="/categories.html#Machine Learning-ref">
+    		Machine Learning <span>1</span>
+    	</a></li>
+    
+  
+
+
+    </ul>
+    
+
+  
+    <ul class="tag_box inline">
+      <li><i class="icon-tags"></i></li>
+      
+      
+
+
+  
+     
+    	<li><a href="/tags.html#SGD-ref">SGD <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#Parallel-ref">Parallel <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#Distributed-ref">Distributed <span>2</span></a></li>
+    
+  
+
+
+
+    </ul>
+    
+
+    <hr>
+    <div class="pagination">
+      <ul>
+      
+        <li class="prev"><a href="/cloud%20computing/2016/02/01/rdma" title="Notes on RDMA">&larr; Previous</a></li>
+      
+        <li><a href="/archive.html">Archive</a></li>
+      
+        <li class="next disabled"><a>Next &rarr;</a>
+      
+      </ul>
+    </div>
+    <hr>
+    
+  </div>
+</div>
+
+
+      </div>
+      <hr>
+      <footer>
+        <p>&copy; 2016 Pengcheng He
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>
+        </p>
+      </footer>
+
+    </div>
+
+    
+
+
+
+  </body>
+</html>
+
+<body>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+</body>

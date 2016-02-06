@@ -4,13 +4,75 @@
  <title>XGK&#39;s Tech Blog</title>
  <link href="http://xgk.github.io/atom.xml" rel="self"/>
  <link href="http://xgk.github.io"/>
- <updated>2016-02-03T16:28:52+00:00</updated>
+ <updated>2016-02-06T06:26:08+00:00</updated>
  <id>http://xgk.github.io</id>
  <author>
    <name>Pengcheng He</name>
    <email>herbert.he@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Notes on 1bit SGD</title>
+   <link href="http://xgk.github.io/machine%20learning/2016/02/06/1Bit"/>
+   <updated>2016-02-06T00:00:00+00:00</updated>
+   <id>http://xgk.github.io/machine%20learning/2016/02/06/1Bit</id>
+   <content type="html">&lt;p&gt;Recently I studied how &lt;a href=&quot;https://cntk.codeplex.com&quot;&gt;CNTK&lt;/a&gt; implemented the &lt;a href=&quot;http://research.microsoft.com/apps/pubs/?id=230137&quot;&gt;1-Bit SGD&lt;/a&gt; in sync mode. 
+Here is a note  of the implementation.&lt;/p&gt;
+
+&lt;p&gt;Most of the implementation is in files, &lt;code&gt;1BitSGD\AllReduceDistGradAggregator.h&lt;/code&gt; &amp;amp; &lt;code&gt;1BitSGD\MatrixQuantizer.h&lt;/code&gt;&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h4 id=&quot;background&quot;&gt;1.  Background&lt;/h4&gt;
+
+&lt;p&gt;The Gradients of each layer in CNTK is stored as a &lt;strong&gt;Maxtrix of MxN&lt;/strong&gt;, e.g. &lt;em&gt;M inputs, N outputs&lt;/em&gt;. And the quantization of gradients is &lt;em&gt;based on each column&lt;/em&gt;, e.g. each output.&lt;/p&gt;
+
+&lt;p&gt;There are several steps during distributed aggregation,&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Encoding local sub-gradients of each &lt;strong&gt;Mini-Batch&lt;/strong&gt; using &lt;strong&gt;1 Bit&lt;/strong&gt; by quantization.&lt;/li&gt;
+  &lt;li&gt;Send local quantized sub-gradients to other computation node in &lt;em&gt;striped&lt;/em&gt; mode to get aggregated.&lt;/li&gt;
+  &lt;li&gt;Receive a strip of quantized sub-gradients from other nodes.&lt;/li&gt;
+  &lt;li&gt;Decoding each received strip of quantized sub-gradients by unquantization, then &lt;strong&gt;add the unquantized results to aggregated gradients strip&lt;/strong&gt;.&lt;/li&gt;
+  &lt;li&gt;Encoding the strip of aggregated gradients using 1 bits by quantization.&lt;/li&gt;
+  &lt;li&gt;Broadcast the quantized aggregated gradients strip to other nodes.&lt;/li&gt;
+  &lt;li&gt;Receiving the quantized aggregated gradients strips from other nodes, and merge them to local quantized gradient matrix.&lt;/li&gt;
+  &lt;li&gt;Decoding the aggregated local quantized gradient matrix as an approximation of the global gradients.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;quantizationunquantization&quot;&gt;2.  Quantization&amp;amp;UnQuantization&lt;/h4&gt;
+
+&lt;p&gt;The quantization is based on each column. E.g.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Q = 0 if V&amp;gt;=0
+Q = 1 if V&amp;lt;0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The max and min values of that column are stored together with the quantized results. See, &lt;code&gt;QuantizedColumn&lt;/code&gt;
+The unquantization will use the max and min values of that column, e.g. (See &lt;code&gt;ValueQuantizer&lt;/code&gt;)
+&lt;script type=&quot;math/tex&quot;&gt;V’ = (Q+0.5)*(max-min)/2 + min;&lt;/script&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;strip&quot;&gt;3.  Strip&lt;/h4&gt;
+
+&lt;p&gt;A strip is a group of columns in the gradient matrix, which is decided by the number of distributed computation nodes. 
+For example, suppose there are 4 nodes, and 8 columns, then each nodes will have a strip of 2 columns.&lt;/p&gt;
+
+&lt;h4 id=&quot;residual&quot;&gt;4.  Residual&lt;/h4&gt;
+&lt;p&gt;The residual of each column is calculated during quantization and used for the quantization of next mini-batch by adding it to the local sub-gradients of that column.&lt;/p&gt;
+
+&lt;h4 id=&quot;an-example-of-message-exchange&quot;&gt;5.  An example of message exchange&lt;/h4&gt;
+
+&lt;p&gt;Here is an example picture of the message exchange during aggregation.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/Example_of_1Bit_SGD_Message_Pass.png&quot; alt=&quot;Example of 1Bit SGD Message Exchange&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Node0&lt;/em&gt; will collect quantized local-sub-gradients of &lt;em&gt;Strip0&lt;/em&gt; from all other 3 &lt;em&gt;nodes&lt;/em&gt;. 
+Then unquantizes each of them and add results to aggregated results of &lt;em&gt;strip0&lt;/em&gt;.
+Then quantize the aggregated results of &lt;em&gt;Strip0&lt;/em&gt;, e.g. &lt;em&gt;AggStrip0&lt;/em&gt; and broadcast it to other 3 &lt;em&gt;nodes&lt;/em&gt;.&lt;/p&gt;
+
+</content>
+ </entry>
  
  <entry>
    <title>Notes on RDMA</title>
@@ -21,6 +83,8 @@
 &lt;p&gt;&lt;em&gt;RDMA&lt;/em&gt; 
 是远程直接内存访问的缩写。最开使用在Infiniban技术中，但是由于Inifiband技术成本高，推广应用不好。
 随着RoCE技术的出现使得RDMA应用到Ethernet上成为可能。RDMA相比于 TCP／IP over ethernet的好处在于，&lt;/p&gt;
+
+&lt;!--more--&gt;
 
 &lt;ol&gt;
   &lt;li&gt;直接写远程主机开辟出来的内存地址，绕过操作系统的TCP/IP socket协议栈。避免了通信过程中的中断开销和操作系统
@@ -42,7 +106,6 @@
 &lt;p&gt;虽然RDMA有这些缺点，但是随着数据中心内部主机带宽的快速增加，近几年有的已经达到40Gbps，TCP／IP over Ethernet
 很难将这个带宽填满，已经十几年历史的RDMA又开始受到学术届和工业界的重视。&lt;/p&gt;
 
-&lt;!--more--&gt;
 </content>
  </entry>
  
@@ -52,7 +115,8 @@
    <updated>2016-01-27T00:00:00+00:00</updated>
    <id>http://xgk.github.io/cloud%20computing/2016/01/27/Paxos</id>
    <content type="html">
-&lt;p&gt;最近读了一些&lt;em&gt;Paxos&lt;/em&gt;的文章. 对其总算有了一些初步的认识. 首先弄清楚Paxos要解决的问题，&lt;/p&gt;
+&lt;p&gt;最近读了一些&lt;em&gt;Paxos&lt;/em&gt;的文章. 对其总算有了一些初步的认识. 首先弄清楚Paxos要解决的问题，
+  &lt;!--more--&gt;&lt;/p&gt;
 
 &lt;ol&gt;
   &lt;li&gt;
