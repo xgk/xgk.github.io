@@ -5,8 +5,8 @@
         <description>XGK&#39;s Tech Blog - Pengcheng He</description>
         <link>http://xgk.github.io</link>
         <atom:link href="http://xgk.github.io/rss.xml" rel="self" type="application/rss+xml" />
-        <lastBuildDate>Sat, 06 Feb 2016 06:26:08 +0000</lastBuildDate>
-        <pubDate>Sat, 06 Feb 2016 06:26:08 +0000</pubDate>
+        <lastBuildDate>Sat, 06 Feb 2016 09:42:38 +0000</lastBuildDate>
+        <pubDate>Sat, 06 Feb 2016 09:42:38 +0000</pubDate>
         <ttl>60</ttl>
 
 
@@ -54,6 +54,7 @@ The unquantization will use the max and min values of that column, e.g. (See &lt
 For example, suppose there are 4 nodes, and 8 columns, then each nodes will have a strip of 2 columns.&lt;/p&gt;
 
 &lt;h4 id=&quot;residual&quot;&gt;4.  Residual&lt;/h4&gt;
+
 &lt;p&gt;The residual of each column is calculated during quantization and used for the quantization of next mini-batch by adding it to the local sub-gradients of that column.&lt;/p&gt;
 
 &lt;h4 id=&quot;an-example-of-message-exchange&quot;&gt;5.  An example of message exchange&lt;/h4&gt;
